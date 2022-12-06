@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link type="text/css" rel="stylesheet" href="{% static 'css/common.css' %}?after">
+    <script  src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <style>
+
+    </style>
+    <script>
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+    </script>
+</head>
+<body>
+    <div class="bar">
+        <div class="logo">
+
+        </div>
+
+        <div class="search">
+            <div class="search_brd">
+            </div>
+            <div class="search_btn">
+            </div>
+        </div>
+        <div class="profile">
+        </div>
+    </div>
+    <div class="slide">
+        <div class="slide_left">
+
+        </div>
+        <div class="slide_right">
+
+        </div>
+        <ul>
+            <li>
+                <div class="slide_img">
+                </div>
+                <div class="grad_back">
+                </div>
+
+                <div class="slide_title">
+                    아바타
+                </div>
+                <div class="slide_rat">
+                    ★★★★★
+                </div>
+                <div class="slide_show">
+                    리뷰 보기
+                </div>
+
+            </li>
+        </ul>
+    </div>
+    <div class="popup_review" style="position: fixed; height: 40vw; width: 80vw; background: white">
+        <div class="popup_left">
+            <div class="popup_thumbnail" style="height: 70%;"></div>
+            <div class="popup_div">
+                <div>
+                    <div class="popup_title"></div>
+                    <div class="popup_info"></div>
+                    <div class="popup_released_date"></div>
+                </div>
+                <div class="popup_ratio"></div>
+            </div>
+        </div>
+        <div class="popup_right">
+            <div class="popup_review_list">
+            </div>
+            <div class="popup_review_write">
+                <div>
+                    <div class="popup_star">
+                        ★★★★★
+                        <span class="popup_star_span">★★★★★</span>
+                        <input type="range" class="popup_star_input" oninput="drawStar(this)" value="1" step="1" min="1" max="5">
+                    </div>
+                    <input class="popup_input" id="review_write" placeholder="텍스트를 입력하세요.">
+                </div>
+                <div class="popup_submit"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var starInput;
+        window.onload = function (){
+            var viewHeight = window.innerHeight;
+            var popup = document.querySelector('.popup_review');
+            popup.style.top = (viewHeight - popup.offsetHeight) / 2 + 'px';
+            var thumbnail = document.querySelector('.popup_thumbnail');
+            thumbnail.style.width = thumbnail.offsetHeight * 1.7 + 'px';
+            popup.style.display = 'none';
+        }
+        window.onresize = function (){
+            var viewHeight = window.innerHeight;
+            var popup = document.querySelector('.popup_review');
+            popup.style.top = (viewHeight - popup.offsetHeight) / 2 + 'px';
+            var thumbnail = document.querySelector('.popup_thumbnail');
+            thumbnail.style.width = thumbnail.offsetHeight * 1.7 + 'px';
+        };
+        const drawStar = (target) => {
+            document.querySelector(`.popup_star span`).style.width = `${target.value * 8}%`;
+            starInput = target.value;
+        }
+        $('.popup_input').keydown(function (key){
+            if(key.keyCode == 13){
+                if(confirm('리뷰를 작성하시겠습니까?')){
+                    console.log('{{ user.id }}' +', ' + movieId + ', ' + starInput + ', ' + document.querySelector('.popup_input').value);
+                    wrtieReviewAjax(starInput, document.querySelector('.popup_input').value);
+                }
+            }
+        })
+    </script>
+
+    <div class="content">
+        <div class="content_tips">
+            {% if user.is_authenticated %} <storng>{{ user.username }}님!</storng> {% endif %} 이런 영화는 어떠세요?
+        </div>
+        <div class="list">
+            {% for movie in result %}
+            <div class="movie_box" style="background-image: url('media/{{ movie.thumbnail }}'); background-size: cover; background-repeat: no-repeat">
+                <div class="movie_info" style="display: none; background: rgba(0,0,0,50%); width: 100%; height: 100%; align-items: center; flex-direction: column; justify-content: center" id="movie-{{ movie.id }}">
+                    <div class="name" style="color: white; text-align: center">
+                        <p>{{ movie.title }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="footer">
+    </div>
+    <script>
+        const csrftoken = getCookie('csrftoken');
+        var movieJson;
+        var movieId;
+        {% for movie in result %}
+            console.log("{{ movie.title }}")
+            console.log("{{ movie.ratio }}")
+            console.log("{{ movie.thumbnail }}")
+        {% endfor %}
+        $('.movie_box').hover(function(){
+            $(this).children('.movie_info').show();
+            $(this).children('.movie_info').css('display', 'flex');
+        },function (){
+            $(this).children('.movie_info').hide();
+        });
+        $('.profile').on('click',function (){
+            {% if user.is_authenticated %}
+
+            {% else %}
+                location.href = '/user/login/';
+            {% endif %}
+        });
+        $('body').on('click', function (e){
+            if($('.popup_review').css('display') == 'none'){
+                if(e.target.className == 'movie_info'){
+                    movieId = parseInt(e.target.id.toString().substring(6));
+                    $('.popup_review').show();
+                    getMovieInfoForPopup();
+                    getMovieReviewDetail();
+                }
+            }
+            else{
+                console.log(e.target.className.toString());
+                if(e.target.className.toString().indexOf('popup') == -1){
+                    $('.popup_review').hide();
+                }
+            }
+        })
+
+        function getMovieInfoForPopup() {
+            $.ajax({
+                method: 'POST',
+                url: '/movie/getReviewPopup/',
+                data: {'movieid' : movieId,
+                'csrfmiddlewaretoken' : '{{ csrf_token }}',
+                },
+                dataType: 'json',
+            }).done(function (json) {
+                console.log(json);
+                movieJson = json;
+                console.log(json['intro']);
+                $('.popup_title').text(json['title']);
+                $('.popup_thumbnail').css('background-image', 'url(media/'+json['thumbnail']+')');
+                $('.popup_ratio').text('⭐️ '+parseFloat(json['ratio']).toFixed(1));
+                $('.popup_info').html('<strong>개요</strong> ' + json['info']);
+                $('.popup_released_date').html('<strong>개봉</strong> ' + json['released_date'].substring(0, 10));
+
+            }).fail(function () {
+
+            });
+        }
+        function wrtieReviewAjax(ratio, reviewText){
+            $.ajax({
+                method: 'POST',
+                url: '/movie/writeReview/',
+                data: {
+                    'userid' : '{{ user.id }}',
+                    'movieid' : movieId,
+                    'ratio' : ratio,
+                    'reviewtext' : reviewText,
+                    'csrfmiddlewaretoken' : '{{ csrf_token }}',
+                },
+                dataType: 'json',
+            }).done(function (json) {
+                $('.popup_review_list').append('<p>'+ {{ user.username }} + ' 의 리뷰 : ' + reviewText +'</p>');
+                document.querySelector('.popup_input').value = '';
+            }).fail(function () {
+                alert('리뷰 작성 오류 !');
+            });
+        }
+        function getMovieReviewDetail(){
+            $('.popup_review_list').empty()
+            $.ajax({
+                method: 'POST',
+                url: '/movie/getReviewDetail/',
+                data: {
+                    'movieid' : movieId,
+                    'csrfmiddlewaretoken' : '{{ csrf_token }}',
+                },
+                dataType: 'json',
+            }).done(function (json) {
+                result = JSON.parse(json['result'])
+                if(JSON.stringify(result) == '[]'){
+                    console.log('empty!');
+                }
+                else {
+                    for(i in result){
+                        $('.popup_review_list').append(
+                            '<div class="popup_review_list_review"><div class="popup_review_list_review_star">' + '★★★★★' +
+                            '<span class="popup_review_list_review_star_span" style="width: '+ result[i]['fields']['ratio'] * 8.4 +'%">★★★★★</span><span class="popup_review_list_review_date">'+ result[i]['fields']['created_at'].substring(0,10) +'</span></div>' +
+                            '   ' + result[i]['fields']['reviewText']
+                            +'</div>'
+                        );
+                    }
+                }
+            }).fail(function () {
+                alert('리뷰 불러오기 오류!');
+            });
+        }
+    </script>
+</body>
+</html>
