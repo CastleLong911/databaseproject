@@ -1,11 +1,15 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib.auth.models import User
-from django.contrib.auth import login as lg, authenticate
+from django.contrib.auth import login as lg, authenticate, logout
 # Create your views here.
 
 def login(request):
     return render(request, 'login.html', {})
+
+def signout(request):
+    logout(request)
+    return redirect('index')
 
 def signup_form(request):
     return render(request, 'signup.html', {})
@@ -32,4 +36,3 @@ def ajax_username_check(request):
             return JsonResponse({'result': 'disable'})
         except User.DoesNotExist:
             return JsonResponse({'result' : 'available'})
-
