@@ -58,7 +58,7 @@
     </div>
     <div class="popup_review" style="position: fixed; height: 40vw; width: 80vw; background: white">
         <div class="popup_left">
-            <div class="popup_thumbnail" style="height: 70%;"></div>
+            <div class="popup_thumbnail" style="height: 70%; width: 40em"></div>
             <div class="popup_div">
                 <div>
                     <div class="popup_title"></div>
@@ -86,13 +86,6 @@
     </div>
     <script>
         var starInput;
-        window.onload = function (){
-            popup.style.display = 'none';
-            resize_review();
-        }
-        window.onresize = function (){
-            resize_review();
-        };
         const drawStar = (target) => {
             document.querySelector(`.popup_star span`).style.width = `${target.value * 9.5}%`;
             starInput = target.value;
@@ -129,7 +122,7 @@
     <div class="footer">
     </div>
     <script>
-        resize_review();
+        $('.popup_review').hide();
         var movieJson;
         var movieId;
         {% for movie in result %}
@@ -252,13 +245,6 @@
             }).fail(function () {
                 alert('리뷰 불러오기 오류!');
             });
-        }
-        function resize_review(){
-            var viewHeight = window.innerHeight;
-            var popup = document.querySelector('.popup_review');
-            popup.style.top = (viewHeight - popup.offsetHeight) / 2 + 'px';
-            var thumbnail = document.querySelector('.popup_thumbnail');
-            thumbnail.style.width = thumbnail.offsetHeight * 1.7 + 'px';
         }
     </script>
 </body>

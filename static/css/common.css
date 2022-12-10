@@ -230,26 +230,22 @@ body {
 }
 
 .popup_review .popup_title{
-    padding: 1vmin;
-    margin-top: 2vmin;
     font-size: 2em;
     font-weight: 500;
+    margin-left: 0.4em;
 }
 
 .popup_review .popup_ratio{
-    padding: 1vmin;
-    margin-top: 2vmin;
     font-size: 3em;
 }
 
 .popup_review .popup_info{
-    padding-top: 1vmin;
-    padding-left: 1vmin;
+    padding-left: 1em;
 }
 
 .popup_review .popup_released_date{
-    padding-top: 1vmin;
-    padding-left: 1vmin;
+    padding-top: 1em;
+    padding-left: 1em;
 }
 .popup_review .popup_review_list{
     height: 80%;
