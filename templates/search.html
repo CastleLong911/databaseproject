@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+{% load static %}
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBProject</title>
+    <link type="text/css" rel="stylesheet" href="{% static 'css/common.css' %}?after">
+    <script  src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+</head>
+<body>
+    <div class="bar">
+        <div class="logo">
+
+        </div>
+
+        <div class="search" >
+            <form method="get" action=" {% url 'search' %}">
+                <input class="search_brd" type="text" id="keyword" name="keyword">
+                <button class="search_btn"></button>
+            </form>
+        </div>
+        <div class="profile">
+        </div>
+        {% if user.is_authenticated %}
+            <div style="display: none; right: 0px; top: 45px;" id="drop-content" class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'signout' %}">sign out</a></li>
+            </div>
+        {% else %}
+
+        {% endif %}
+    </div>
+    <div class="search_background" style="width: 100%; height: 100vh; background: #c3c3c3;">
+        <div class="search_keyword" style="margin-left: 2em; font-size: 1.5em">
+            <p>검색어 <span style="font-weight: bold">"{{ keyword }}"</span> (검색 결과 {{ result|length }}건)</p>
+        </div>
+        <div class="search_line" style="height: 0.4em; background: #333333; border-radius: 1em; margin-left: 2em; margin-right: 2em;"></div>
+        <div class="search_list">
+            {% for movie in result %}
+                <div class="search_movie_box" style="border-radius: 1em; border: 1px solid; background: #fff">
+                    <div class="saerch_image" style="background-image: url('../media/{{ movie.thumbnail }}'); background-size: cover; background-repeat: no-repeat; height: 12vw; margin: 1em; border: 0.5px solid">
+                    </div>
+                    <div class="search_info" style="margin: 1em;">
+                        <p style="font-weight: bold; font-size: 1.3em;">{{ movie.title }}</p>
+                        <p>{{ movie.info }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+<script>
+    $('.logo').on('click', function (){
+       location.href = '{% url 'index' %}';
+    });
+    $('.profile').on('click',function (){
+            {% if user.is_authenticated %}
+                if($('#drop-content').css('display') == 'none'){
+                    $('#drop-content').css('display', 'block');
+                }
+                else {
+                    $('#drop-content').css('display', 'none');
+                }
+            {% else %}
+                location.href = '/user/login/';
+            {% endif %}
+        });
+</script>
+</html>

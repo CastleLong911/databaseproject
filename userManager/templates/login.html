@@ -104,20 +104,27 @@
 
 </head>
 <body class="text-center">
-    <div class="bar" style="position: absolute; top: 0px;">
+    <div class="bar">
         <div class="logo">
+
         </div>
 
-        <div class="search">
-            <div class="search_brd">
-            </div>
-
-            <div class="search_btn">
-            </div>
+        <div class="search" style="font-size: 11px">
+            <form method="get" action=" {% url 'search' %}">
+                <input class="search_brd" type="text" id="keyword" name="keyword">
+                <button class="search_btn"></button>
+            </form>
         </div>
-
         <div class="profile">
         </div>
+        {% if user.is_authenticated %}
+            <div style="display: none; right: 0px; top: 45px;" id="drop-content" class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'signout' %}">sign out</a></li>
+            </div>
+        {% else %}
+
+        {% endif %}
+
     </div>
 
     <content style="display: flex; align-items: center;">
@@ -148,6 +155,18 @@
     <script>
         $('.logo').on('click',function (){
            location.href = 'http://127.0.0.1:8000';
+        });
+        $('.profile').on('click',function (){
+            {% if user.is_authenticated %}
+                if($('#drop-content').css('display') == 'none'){
+                    $('#drop-content').css('display', 'block');
+                }
+                else {
+                    $('#drop-content').css('display', 'none');
+                }
+            {% else %}
+                location.href = '/user/login/';
+            {% endif %}
         });
     </script>
 </body>

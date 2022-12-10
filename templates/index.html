@@ -12,23 +12,6 @@
     <style>
 
     </style>
-    <script>
-        function getCookie(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-
-    </script>
 </head>
 <body>
     <div class="bar">
@@ -36,11 +19,11 @@
 
         </div>
 
-        <div class="search">
-            <div class="search_brd">
-            </div>
-            <div class="search_btn">
-            </div>
+        <div class="search" style="font-size: 11px">
+            <form method="get" action=" {% url 'search' %}">
+                <input class="search_brd" type="text" id="keyword" name="keyword">
+                <button class="search_btn"></button>
+            </form>
         </div>
         <div class="profile">
         </div>
@@ -54,23 +37,17 @@
 
     </div>
     <div class="slide">
-        <div class="slide_left">
-
-        </div>
-        <div class="slide_right">
-
-        </div>
         <ul>
             <li>
-                <div class="slide_img">
+                <div class="slide_img" style="background-image: url('media/{{ thumbnail }}')">
                 </div>
                 <div class="grad_back">
                 </div>
                 <div class="slide_title">
-                    아바타
+                    {{ title }}
                 </div>
                 <div class="slide_rat">
-                    ★★★★★
+                    ★ {{ ratio }}
                 </div>
                 <div class="slide_show">
                     리뷰 보기
@@ -125,12 +102,15 @@
             thumbnail.style.width = thumbnail.offsetHeight * 1.7 + 'px';
         };
         const drawStar = (target) => {
-            document.querySelector(`.popup_star span`).style.width = `${target.value * 8}%`;
+            document.querySelector(`.popup_star span`).style.width = `${target.value * 9.5}%`;
             starInput = target.value;
         }
         $('.popup_input').keydown(function (key){
             if(key.keyCode == 13){
-                if(confirm('리뷰를 작성하시겠습니까?')){
+                if(document.querySelector('.popup_input').value == ''){
+                    alert('리뷰를 작성해주세요!');
+                }
+                else if(confirm('리뷰를 작성하시겠습니까?')){
                     console.log('{{ user.id }}' +', ' + movieId + ', ' + starInput + ', ' + document.querySelector('.popup_input').value);
                     wrtieReviewAjax(starInput, document.querySelector('.popup_input').value);
                 }
@@ -157,7 +137,6 @@
     <div class="footer">
     </div>
     <script>
-        const csrftoken = getCookie('csrftoken');
         var movieJson;
         var movieId;
         {% for movie in result %}
@@ -183,6 +162,7 @@
                 location.href = '/user/login/';
             {% endif %}
         });
+
         $('body').on('click', function (e){
             if($('.popup_review').css('display') == 'none'){
                 if(e.target.className == 'movie_info'){
@@ -194,12 +174,17 @@
             }
             else{
                 console.log(e.target.className.toString());
-                if(e.target.className.toString().indexOf('popup') == -1){
+                if(e.target.className.toString().indexOf('popup') == -1 && e.target.className.toString() != 'slide_show'){
                     $('.popup_review').hide();
                 }
             }
         })
-
+        $('.slide_show').on('click',function (){
+            movieId = '{{ id }}';
+            $('.popup_review').show();
+            getMovieInfoForPopup();
+            getMovieReviewDetail();
+        });
         function getMovieInfoForPopup() {
             $.ajax({
                 method: 'POST',
@@ -234,11 +219,16 @@
                     'csrfmiddlewaretoken' : '{{ csrf_token }}',
                 },
                 dataType: 'json',
-            }).done(function (json) {
-                $('.popup_review_list').append('<p>'+ {{ user.username }} + ' 의 리뷰 : ' + reviewText +'</p>');
-                document.querySelector('.popup_input').value = '';
-            }).fail(function () {
-                alert('리뷰 작성 오류 !');
+                success: function(result){
+                    console.log(result)
+                    document.querySelector('.popup_input').value = '';
+                    getMovieReviewDetail();
+                },
+                error: function(request, status, error) {
+                    alert('리뷰 작성 오류 !\ncode : ' + request.status + '\nmessage : ' + request.responseText + '\nerror : ' + error);
+                    console.log('리뷰 작성 오류 !\ncode : ' + request.status + '\nmessage : ' + request.responseText + '\nerror : ' + error);
+                    console.log(request);
+                }
             });
         }
         function getMovieReviewDetail(){
@@ -260,7 +250,7 @@
                     for(i in result){
                         $('.popup_review_list').append(
                             '<div class="popup_review_list_review"><div class="popup_review_list_review_star">' + '★★★★★' +
-                            '<span class="popup_review_list_review_star_span" style="width: '+ result[i]['fields']['ratio'] * 8.4 +'%">★★★★★</span><span class="popup_review_list_review_date">'+ result[i]['fields']['created_at'].substring(0,10) +'</span></div>' +
+                            '<span class="popup_review_list_review_star_span" style="width: '+ result[i]['fields']['ratio'] * 10 +'%">★★★★★</span><span class="popup_review_list_review_date">'+ result[i]['fields']['created_at'].substring(0,10) +'</span></div>' +
                             '   ' + result[i]['fields']['reviewText']
                             +'</div>'
                         );
