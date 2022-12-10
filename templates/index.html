@@ -87,19 +87,11 @@
     <script>
         var starInput;
         window.onload = function (){
-            var viewHeight = window.innerHeight;
-            var popup = document.querySelector('.popup_review');
-            popup.style.top = (viewHeight - popup.offsetHeight) / 2 + 'px';
-            var thumbnail = document.querySelector('.popup_thumbnail');
-            thumbnail.style.width = thumbnail.offsetHeight * 1.7 + 'px';
             popup.style.display = 'none';
+            resize_review();
         }
         window.onresize = function (){
-            var viewHeight = window.innerHeight;
-            var popup = document.querySelector('.popup_review');
-            popup.style.top = (viewHeight - popup.offsetHeight) / 2 + 'px';
-            var thumbnail = document.querySelector('.popup_thumbnail');
-            thumbnail.style.width = thumbnail.offsetHeight * 1.7 + 'px';
+            resize_review();
         };
         const drawStar = (target) => {
             document.querySelector(`.popup_star span`).style.width = `${target.value * 9.5}%`;
@@ -137,6 +129,7 @@
     <div class="footer">
     </div>
     <script>
+        resize_review();
         var movieJson;
         var movieId;
         {% for movie in result %}
@@ -259,6 +252,13 @@
             }).fail(function () {
                 alert('리뷰 불러오기 오류!');
             });
+        }
+        function resize_review(){
+            var viewHeight = window.innerHeight;
+            var popup = document.querySelector('.popup_review');
+            popup.style.top = (viewHeight - popup.offsetHeight) / 2 + 'px';
+            var thumbnail = document.querySelector('.popup_thumbnail');
+            thumbnail.style.width = thumbnail.offsetHeight * 1.7 + 'px';
         }
     </script>
 </body>

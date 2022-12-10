@@ -7,7 +7,7 @@ def index(request):
     print(movies)
     randMovie = movies[13]
     print(randMovie.thumbnail, randMovie.title)
-    result = {'result' : movies, 'thumbnail' : randMovie.thumbnail, 'title' : randMovie.title, 'ratio' : randMovie.ratio, 'id' : randMovie.id}
+    result = {'result' : movies, 'thumbnail' : randMovie.thumbnail, 'title' : randMovie.title, 'ratio' : round(float(randMovie.ratio),1), 'id' : randMovie.id}
     return render(request, 'index.html', result)
 
 def search(request):
