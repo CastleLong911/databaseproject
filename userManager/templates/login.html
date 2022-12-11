@@ -153,8 +153,8 @@
         </main>
     </content>
     <script>
-        $('.logo').on('click',function (){
-           location.href = 'http://127.0.0.1:8000';
+        $('.logo').on('click', function (){
+            location.href = '{% url 'index' %}';
         });
         $('.profile').on('click',function (){
             {% if user.is_authenticated %}

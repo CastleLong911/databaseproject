@@ -152,6 +152,9 @@
             <button class="w-100 btn btn-dark" type="submit">Sign up!</button>
         </form>
     <script>
+        $('.logo').on('click', function (){
+            location.href = '{% url 'index' %}';
+        });
         $(document).ready(function() {
             jQuery.validator.addMethod('is_username_available', function (value, element) {
                 var response = '';
@@ -179,9 +182,10 @@
                 });
                 return response;
             }, '이 아이디는 사용하실 수 없습니다');
-            $.validator.addMethod("regex", function(value, element, regexp) {
-                let re = new RegExp(regexp);
+            $.validator.addMethod("regex", function(value, element) {
+                let re = new RegExp("^[A-Za-z0-9]{6,12}$");
                 let res = re.test(value)
+                console.log(value, res);
                 return res;
             });
 
@@ -197,7 +201,7 @@
                         required: true,
                         minlength: 4,
                         maxlength: 12,
-                        regex: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{4,12}"
+                        regex: true
                     },
                     passwordcheck: {
                         equalTo: password
@@ -213,7 +217,7 @@
                     password: {
                         minlength: '4~12 길이로 해주세요',
                         maxlength: '4~12 길이로 해주세요',
-                        regex: '하나 이상의 대문자, 특수문자, 숫자가 포함되어야 합니다'
+                        regex: '비밀번호는 대문자 소문자 숫자로만 이뤄주세요'
                     },
                     passwordcheck: '비밀번호가 일치하지 않습니다'
                 }

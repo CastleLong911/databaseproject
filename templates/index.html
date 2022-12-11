@@ -148,7 +148,9 @@
                 location.href = '/user/login/';
             {% endif %}
         });
-
+        $('.logo').on('click', function (){
+            location.href = '{% url 'index' %}';
+        });
         $('body').on('click', function (e){
             if($('.popup_review').css('display') == 'none'){
                 if(e.target.className == 'movie_info'){
